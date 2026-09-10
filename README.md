@@ -54,8 +54,8 @@ The full policy text lives in
 
 ```bash
 make setup          # install hooks + guard self-test
-make check:guard    # self-test the attribution guard
-make check:commits  # re-run the message guard over the last commit message
+make check-guard    # self-test the attribution guard
+make check-commits  # re-run the message guard over the last commit message
 ```
 
 ## License

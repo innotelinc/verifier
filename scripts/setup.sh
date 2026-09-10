@@ -23,15 +23,14 @@ echo "setup: guard hooks installed (core.hooksPath=.githooks)"
 # shellcheck disable=SC1091
 source .githooks/guard-lib
 
-if printf 'co-authored-by: Someone Else <else@example.com>\n' | guard_check_stream >/dev/null 2>&1; then
-  echo "setup: guard self-test FAILED — a foreign trailer was not rejected" >&2
-  exit 1
-fi
-echo "setup: guard rejects foreign attribution trailers"
+# shellcheck source=.githooks/guard-lib
+# shellcheck disable=SC1091
+source .githooks/guard-lib
 
-if printf 'signed-off-by: Darnel Hunter <dhunter@innotel.us>\n' | guard_check_stream >/dev/null 2>&1; then
-  echo "setup: guard allows the owner's trailers — self-test passed"
-else
-  echo "setup: guard self-test FAILED — the owner's trailer was rejected" >&2
+if ! guard_selftest --self-commit; then
+  echo "setup: guard self-test FAILED" >&2
   exit 1
 fi
+echo "setup: guard self-test passed (fixtures + pre-commit hook fire)"
+echo "setup: guard rejects foreign attribution trailers"
+echo "setup: guard allows the owner's trailers — self-test passed"

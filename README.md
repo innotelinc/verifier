@@ -12,6 +12,10 @@ other platform can adopt verbatim:
 - **Conformity scaffolding** — the repository structure, guard workflows, and
   landing-page layout used across the portfolio, kept runnable and
   self-checking (the CI fails if a required file goes missing).
+- **Proof it still fires** — `guard_selftest` (run by `make check-guard`,
+  `scripts/setup.sh`, and every platform's CI) forces the guard's failure
+  paths; the portfolio drift workflow fails CI if any sibling repo's vendored
+  copy of the guard files differs from the canonical ones here.
 
 ## Quick start
 
@@ -23,7 +27,9 @@ bash scripts/setup.sh
 
 `scripts/setup.sh` installs the guard hooks for this clone
 (`git config core.hooksPath .githooks`) and runs the guard self-test, which
-proves the guard rejects foreign attribution trailers and allows the owner's.
+proves the guard rejects foreign attribution trailers, allows the owner's
+trailers and GitHub's `dependabot[bot]`, and that the real pre-commit hook
+fires on a forbidden staged diff.
 
 ## The attribution policy
 

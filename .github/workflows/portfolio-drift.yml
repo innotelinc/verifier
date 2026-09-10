@@ -1,0 +1,88 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# portfolio-drift.yml — fail if any portfolio repo's vendored guard files
+# drift from the canonical copies in this repository.
+#
+# The attribution guard is one policy adopted verbatim by every platform in
+# the Innotel stack (.githooks/guard-lib, the hooks that source it, and the
+# attribution-guard workflow). A drifted copy means local and CI enforcement
+# diverge, so any byte-level difference is a bug. Runs when the canonical
+# copies change, nightly, and on demand; clones every sibling repo at its
+# default branch and compares.
+#
+# The repo list below is the portfolio inventory — extend it when a platform
+# is added.
+# ═══════════════════════════════════════════════════════════════════════════
+
+name: Portfolio guard drift
+
+on:
+  push:
+    paths:
+      - ".githooks/**"
+      - ".github/workflows/attribution-guard.yml"
+      - ".github/workflows/portfolio-drift.yml"
+  pull_request:
+    paths:
+      - ".githooks/**"
+      - ".github/workflows/attribution-guard.yml"
+      - ".github/workflows/portfolio-drift.yml"
+  schedule:
+    # Nightly: catches drift introduced in the sibling repos themselves.
+    - cron: "0 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  drift:
+    name: Vendored guard files match verifier
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Compare every sibling repo against the canonical copies
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PORTFOLIO: >-
+            atheniq atlas capstone cerulean distro innotel-platform-stack
+            magnate monarch npm oasis olympus onyx plutus rizzaura signara
+            sign-platform zapit zeus
+        run: |
+          set -euo pipefail
+          org="innotelinc"
+          files=(
+            .githooks/guard-lib
+            .githooks/commit-msg
+            .githooks/pre-commit
+            .github/workflows/attribution-guard.yml
+          )
+
+          drift=0
+          for repo in ${PORTFOLIO}; do
+            if ! git clone --quiet --depth 1 \
+                 "https://x-access-token:${GH_TOKEN}@github.com/${org}/${repo}.git" "$repo" 2>/dev/null; then
+              echo "::error::could not clone ${org}/${repo} — fix the portfolio list or the token"
+              drift=$((drift + 1))
+              continue
+            fi
+            for f in "${files[@]}"; do
+              if [ ! -f "$repo/$f" ]; then
+                echo "::error::$repo is missing $f — the attribution guard is not adopted there"
+                drift=$((drift + 1))
+                continue
+              fi
+              if ! cmp -s "$f" "$repo/$f"; then
+                echo "::error::$repo/$f differs from the canonical copy in verifier — re-sync it"
+                diff -- "$f" "$repo/$f" | head -20 || true
+                drift=$((drift + 1))
+              fi
+            done
+          done
+
+          if [ "$drift" -ne 0 ]; then
+            echo "::error::portfolio guard drift: $drift problem(s) found"
+            exit 1
+          fi
+          echo "portfolio guard drift check: all copies match"

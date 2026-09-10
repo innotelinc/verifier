@@ -6,7 +6,7 @@
 .DEFAULT_GOAL := help
 SHELL := /bin/bash
 
-.PHONY: help setup check:guard check:commits
+.PHONY: help setup check-guard check-commits
 
 help: ## Show this help message
 	@echo "verifier — operator workflow"
@@ -20,8 +20,8 @@ setup: ## Install guard hooks + run the guard self-test
 
 ## ---- Conformity -----------------------------------------------------------
 
-check:guard: ## Self-test the attribution guard (reject foreign, allow owner)
+check-guard: ## Self-test the attribution guard (reject foreign, allow owner)
 	bash scripts/setup.sh
 
-check:commits: ## Re-run the message guard over the last commit message
+check-commits: ## Re-run the message guard over the last commit message
 	bash .githooks/commit-msg .git/COMMIT_EDITMSG 2>/dev/null || true

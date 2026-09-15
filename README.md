@@ -1,5 +1,8 @@
 # Verifier — Trust & Verification Tooling
 
+[![CI](https://github.com/innotelinc/verifier/actions/workflows/ci.yml/badge.svg)](https://github.com/innotelinc/verifier/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Verifier is the trust and verification tooling for the [Innotel platform
 stack](https://github.com/innotelinc/innotel-platform-stack). It packages the
 portfolio's cross-cutting guarantees as small, self-contained pieces every
@@ -16,6 +19,14 @@ other platform can adopt verbatim:
   `scripts/setup.sh`, and every platform's CI) forces the guard's failure
   paths; the portfolio drift workflow fails CI if any sibling repo's vendored
   copy of the guard files differs from the canonical ones here.
+
+## Why Verifier
+
+| Problem | Verifier answer |
+| --- | --- |
+| Attribution rules drift between local hooks and CI | One `guard-lib`, loaded by `commit-msg`, `pre-commit`, and the CI workflow at once |
+| "Conformant" is a document nobody can run | Scaffolding plus a self-test that CI actually executes on every push |
+| A vendored guard copy silently rots in a sibling repo | `portfolio-drift.yml` fails CI when a copy differs from the canonical one here |
 
 ## Quick start
 
@@ -55,6 +66,8 @@ The full policy text lives in
 | `docs/` | Policy and documentation |
 | `scripts/setup.sh` | Hook installation + guard self-test |
 | `web/landing/` | The static landing page (published to Pages) |
+
+See [docs/stack.md](docs/stack.md) for Verifier's role in the Innotel Platform Stack.
 
 ## Make targets
 

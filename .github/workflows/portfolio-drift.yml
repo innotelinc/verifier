@@ -48,7 +48,7 @@ jobs:
           PORTFOLIO: >-
             atheniq atlas capstone cerulean distro innotel-platform-stack
             magnate monarch npm oasis olympus onyx plutus rizzaura signara
-            sign-platform zapit zeus
+            sign zapit zeus
         run: |
           set -euo pipefail
           org="innotelinc"

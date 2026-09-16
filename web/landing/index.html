@@ -3,61 +3,311 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Verifier — Trust &amp; Verification Tooling</title>
-  <meta name="description" content="Verifier — trust and verification tooling for the Innotel platform portfolio.">
+  <title>Verifier — Trust &amp; Verification Tooling for the Innotel Stack</title>
+  <meta name="description" content="Verifier packages the Innotel portfolio's cross-cutting guarantees as small, self-contained pieces every platform adopts verbatim: one attribution policy, secret scanning at the hook, and conformity scaffolding that CI actually proves.">
   <meta property="og:title" content="Verifier — Trust &amp; Verification Tooling">
+  <meta property="og:description" content="One attribution policy enforced at the hook and in CI, estate-wide secret scanning, and a drift check that fails when any vendored copy rots.">
   <meta property="og:type" content="website">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2334d399'/%3E%3Cpath fill='%230b0d10' d='M14 32l12 12 24-24-6-6-18 18-6-6z'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%233ddc84'/%3E%3Cpath fill='%230b0d10' d='M28 42L16 30l4-4 8 8 16-16 4 4z'/%3E%3C/svg%3E">
   <style>
     :root {
       color-scheme: dark;
-      --bg: #0b0d10;
-      --surface: #181c22;
-      --border: #262c35;
-      --text: #f4f7fb;
-      --text-muted: #a8b2bf;
-      --accent: #34d399;
+      --p-bg: #0b0d10;
+      --p-bg-elevated: #14181e;
+      --p-border: #262c35;
+      --p-text: #f4f7fb;
+      --p-text-secondary: #a8b2bf;
+      --p-text-muted: #727d8c;
+      --p-accent: #3ddc84;
+      --p-accent-hover: #6fe8a7;
+      --p-accent-tint: rgba(61, 220, 132, 0.12);
+      --p-success: #3ddc84;
+      --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+      --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
     }
     * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      background: var(--bg);
-      color: var(--text);
+      background: var(--p-bg);
+      color: var(--p-text);
       font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
       font-size: 16px;
-      line-height: 1.6;
+      line-height: 1.65;
       -webkit-font-smoothing: antialiased;
     }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    main { max-width: 720px; margin: 0 auto; padding: 96px 24px 64px; }
-    .logo {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 56px; height: 56px; border-radius: 14px;
-      background: var(--accent); color: var(--bg); font-size: 26px; font-weight: 700;
+    a { color: var(--p-accent); text-decoration: none; }
+    a:hover { color: var(--p-accent-hover); }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+    .topbar {
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(11, 13, 16, 0.72);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--p-border);
     }
-    h1 { font-size: 40px; margin: 28px 0 8px; letter-spacing: -0.02em; }
-    p.sub { color: var(--text-muted); font-size: 18px; margin: 0 0 40px; }
-    .links { display: flex; gap: 16px; flex-wrap: wrap; }
-    .links a {
-      display: inline-block; padding: 10px 18px; border-radius: 8px;
-      border: 1px solid var(--border); background: var(--surface);
-      color: var(--text); font-weight: 500;
+    .topbar-inner { display: flex; align-items: center; gap: 20px; height: 60px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 650; letter-spacing: 0.04em; color: var(--p-text); }
+    .brand:hover { color: var(--p-text); }
+    .brand .mark {
+      display: grid; place-items: center;
+      width: 26px; height: 26px; border-radius: 8px;
+      background: var(--p-bg-elevated);
+      border: 1px solid var(--p-border);
+      font-size: 15px;
     }
-    .links a:hover { border-color: var(--accent); text-decoration: none; }
-    footer { color: var(--text-muted); margin-top: 72px; font-size: 14px; }
+    .brand .dot { color: var(--p-accent); }
+    .topbar nav { margin-left: auto; display: flex; align-items: center; gap: 4px; }
+    .topbar nav a {
+      color: var(--p-text-secondary);
+      padding: 6px 12px; border-radius: var(--radius-sm);
+      font-size: 14px;
+      transition: color .15s var(--ease), background .15s var(--ease);
+    }
+    .topbar nav a:hover { color: var(--p-text); background: var(--p-accent-tint); }
+    .topbar .gh {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-left: 8px;
+      border: 1px solid var(--p-border);
+      border-radius: var(--radius-md);
+      padding: 7px 14px;
+      color: var(--p-text);
+      font-size: 14px;
+      transition: border-color .15s var(--ease), background .15s var(--ease);
+    }
+    .topbar .gh:hover { border-color: var(--p-accent); background: var(--p-accent-tint); color: var(--p-text); }
+    .hero { position: relative; overflow: hidden; padding: 96px 0 72px; }
+    .hero::before {
+      content: "";
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(600px 320px at 70% -10%, rgba(61, 220, 132, 0.12), transparent 70%),
+        radial-gradient(500px 300px at 15% 110%, rgba(61, 220, 132, 0.07), transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner { position: relative; max-width: 760px; }
+    .kicker {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--p-accent-hover);
+      background: var(--p-accent-tint);
+      border: 1px solid rgba(61, 220, 132, 0.25);
+      border-radius: 999px;
+      padding: 5px 14px;
+      margin: 0 0 24px;
+    }
+    h1 { font-size: clamp(2.2rem, 5.5vw, 3.4rem); line-height: 1.08; letter-spacing: -0.02em; margin: 0 0 20px; font-weight: 700; }
+    h1 .accent { color: var(--p-accent); }
+    .lede { font-size: 1.125rem; color: var(--p-text-secondary); max-width: 660px; margin: 0 0 32px; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      border-radius: var(--radius-md);
+      padding: 11px 20px;
+      font-size: 15px; font-weight: 550;
+      border: 1px solid transparent;
+      transition: background .15s var(--ease), border-color .15s var(--ease);
+    }
+    .btn-primary { background: var(--p-accent); color: #07140c; font-weight: 600; }
+    .btn-primary:hover { background: var(--p-accent-hover); color: #07140c; }
+    .btn-secondary { border-color: var(--p-border); color: var(--p-text); }
+    .btn-secondary:hover { border-color: var(--p-accent); background: var(--p-accent-tint); color: var(--p-text); }
+    .quickstart {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--p-bg-elevated);
+      border: 1px solid var(--p-border);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      max-width: 680px;
+      font-size: 13.5px;
+    }
+    .quickstart code { color: var(--p-text); white-space: nowrap; overflow-x: auto; }
+    .quickstart code .c { color: var(--p-text-muted); }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; max-width: 760px; }
+    .stat {
+      border: 1px solid var(--p-border);
+      background: var(--p-bg-elevated);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .stat b { font-size: 15px; }
+    .stat span { color: var(--p-text-secondary); font-size: 12.5px; }
+    section { padding: 72px 0; border-top: 1px solid var(--p-border); }
+    h2 { font-size: clamp(1.6rem, 3.5vw, 2.1rem); letter-spacing: -0.015em; margin: 0 0 10px; }
+    h2 .accent { color: var(--p-accent); }
+    .section-sub { color: var(--p-text-secondary); margin: 0 0 34px; max-width: 660px; }
+    .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    .card {
+      border: 1px solid var(--p-border);
+      background: var(--p-bg-elevated);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      transition: border-color .15s var(--ease);
+    }
+    .card:hover { border-color: var(--p-accent); }
+    .card h3 { margin: 0; font-size: 15.5px; }
+    .card p { margin: 6px 0 0; color: var(--p-text-secondary); font-size: 14px; }
+    .card .icon {
+      display: inline-grid; place-items: center;
+      width: 34px; height: 34px;
+      border-radius: var(--radius-md);
+      background: var(--p-accent-tint);
+      margin-bottom: 14px;
+      font-size: 16px;
+    }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: center; }
+    @media (max-width: 900px) { .split { grid-template-columns: 1fr; } }
+    pre.terminal {
+      margin: 0;
+      background: var(--p-bg-elevated);
+      border: 1px solid var(--p-border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      font-size: 13px;
+      line-height: 1.75;
+      overflow-x: auto;
+      color: var(--p-text-secondary);
+    }
+    pre.terminal .p { color: var(--p-accent); }
+    pre.terminal .ok { color: var(--p-success); }
+    pre.terminal .cmt { color: var(--p-text-muted); }
+    .surfaces { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .surface {
+      display: flex; flex-direction: column; gap: 2px;
+      background: var(--p-bg-elevated);
+      border: 1px solid var(--p-border);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      transition: border-color .15s var(--ease);
+    }
+    .surface:hover { border-color: var(--p-accent); }
+    .surface b { font-size: 14.5px; }
+    .surface small { color: var(--p-text-secondary); font-size: 12.5px; }
+    .surface .live {
+      margin-left: auto;
+      font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--p-success);
+      border: 1px solid rgba(61, 220, 132, 0.3);
+      border-radius: 999px;
+      padding: 1px 8px;
+    }
+    footer {
+      border-top: 1px solid var(--p-border);
+      padding: 32px 0 40px;
+      color: var(--p-text-muted);
+      font-size: 13.5px;
+    }
+    .foot-inner { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; }
+    footer a { color: var(--p-text-secondary); }
+    footer a:hover { color: var(--p-text); }
+    .foot-links { display: flex; gap: 18px; flex-wrap: wrap; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      html { scroll-behavior: auto; }
+    }
   </style>
 </head>
 <body>
-  <main>
-    <div class="logo">✓</div>
-    <h1>Verifier</h1>
-    <p class="sub">Trust &amp; verification tooling for the Innotel platform portfolio.</p>
-    <div class="links">
-      <a href="https://github.com/innotelinc/verifier">Source code</a>
-      <a href="https://github.com/innotelinc/verifier/tree/main/docs">Documentation</a>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="#">
+        <span class="mark" aria-hidden="true">✓</span>
+        Verifier<span class="dot">.</span>
+      </a>
+      <nav aria-label="Main">
+        <a href="#pieces">Pieces</a>
+        <a href="#enforcement">Enforcement</a>
+        <a href="#adopt">Adopt</a>
+        <a class="gh" href="https://github.com/innotelinc/verifier">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+          GitHub
+        </a>
+      </nav>
     </div>
-    <footer>Part of the Innotel platform stack.</footer>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="wrap hero-inner">
+        <p class="kicker">The trust layer · adopted by every platform in the stack</p>
+        <h1>One policy. Three enforcement points. <span class="accent">Zero drift.</span></h1>
+        <p class="lede">Verifier packages the portfolio's cross-cutting guarantees as small, self-contained pieces every platform adopts verbatim: one attribution policy enforced at the local hooks and in CI, secret scanning wired into the pre-commit hook estate-wide, and conformity scaffolding that proves itself on every push — with a drift check that fails CI the moment any vendored copy rots.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="https://github.com/innotelinc/verifier#quick-start">Adopt it</a>
+          <a class="btn btn-secondary" href="https://github.com/innotelinc/verifier/tree/main/docs">Read the policy</a>
+        </div>
+        <div class="quickstart">
+          <code><span class="c">$</span> git clone https://github.com/innotelinc/verifier.git && cd verifier && bash scripts/setup.sh</code>
+        </div>
+        <div class="stats">
+          <div class="stat"><b>1</b><span>attribution policy, shared verbatim</span></div>
+          <div class="stat"><b>3</b><span>enforcement points: commit-msg, pre-commit, CI</span></div>
+          <div class="stat"><b>18</b><span>sibling repos under the drift check</span></div>
+          <div class="stat"><b>self-test</b><span>CI runs the guard's failure paths</span></div>
+        </div>
+      </div>
+    </div>
+
+    <section id="pieces">
+      <div class="wrap">
+        <h2>Small pieces, adopted <span class="accent">verbatim</span>.</h2>
+        <p class="section-sub">Every guarantee ships as a file you vendor, not a service you depend on — so it works offline, in CI, and on every contributor's machine.</p>
+        <div class="grid">
+          <div class="card"><span class="icon" aria-hidden="true">🛡️</span><h3>Attribution guard</h3><p>One <code>guard-lib</code> loaded by <code>commit-msg</code>, <code>pre-commit</code>, and the CI workflow — the rules can never drift between local and CI.</p></div>
+          <div class="card"><span class="icon" aria-hidden="true">🔍</span><h3>Secret scanning at the hook</h3><p><code>secret-scan.py</code> + a pre-commit shim in every repo: credential-shaped staged lines block the commit before it is created.</p></div>
+          <div class="card"><span class="icon" aria-hidden="true">📐</span><h3>Conformity scaffolding</h3><p>The repository structure, guard workflows, and landing-page layout used across the portfolio — kept runnable and self-checking.</p></div>
+          <div class="card"><span class="icon" aria-hidden="true">🔁</span><h3>Drift enforcement</h3><p><code>portfolio-drift.yml</code> fails CI when any sibling's vendored copy differs from the canonical one here.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="enforcement">
+      <div class="wrap">
+        <h2>Where the guarantees <span class="accent">fire</span>.</h2>
+        <p class="section-sub">The attribution policy: no one but the owner may ever be credited. The secret gate: nothing credential-shaped gets committed. Both fire at three points.</p>
+        <div class="surfaces">
+          <div class="surface"><b>commit-msg hook</b><span class="live">local</span><small>blocks foreign attribution trailers before the commit is written</small></div>
+          <div class="surface"><b>pre-commit hook</b><span class="live">local</span><small>scans staged added lines — attribution + secret-shape findings block</small></div>
+          <div class="surface"><b>attribution-guard CI</b><span class="live">every push</span><small>commit messages, PR text, and every added line, on GitHub's runners</small></div>
+          <div class="surface"><b>portfolio-drift CI</b><span class="live">nightly</span><small>fails when any vendored copy in 18 sibling repos differs from canonical</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="adopt">
+      <div class="wrap">
+        <h2>Adopt it in <span class="accent">one command</span>.</h2>
+        <p class="section-sub">Setup installs the hooks for the clone, runs the guard self-test that forces its failure paths, and proves the gate fires before you write a line.</p>
+        <div class="split">
+          <div>
+            <div class="grid" style="gap:14px">
+              <div class="card"><span class="icon" aria-hidden="true">⚙️</span><h3>scripts/setup.sh</h3><p>Installs hooks via <code>git config core.hooksPath .githooks</code> and runs the self-test.</p></div>
+              <div class="card"><span class="icon" aria-hidden="true">🧪</span><h3>guard_selftest</h3><p>Forces the guard's rejection paths — foreign trailers, AI credits, forbidden staged diffs.</p></div>
+              <div class="card"><span class="icon" aria-hidden="true">📜</span><h3>docs/attribution-policy.md</h3><p>The full policy text, including the allowed exceptions and what is not attribution.</p></div>
+            </div>
+          </div>
+          <pre class="terminal"><span class="cmt"># install + prove the gate fires</span>
+$ <span class="p">bash</span> scripts/setup.sh
+<span class="ok">>> hooks installed (core.hooksPath=.githooks)</span>
+<span class="ok">>> guard_selftest: 6/6 failure paths verified</span>
+$ <span class="p">git commit</span> -m "docs: add walkthrough"
+<span class="cmt"># a staged API key blocks the commit instead:</span>
+<span class="ok">secret-scan: 1 finding(s) — API_KEY sk************56</span></pre>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <footer>
+    <div class="wrap foot-inner">
+      <span>Verifier — the trust layer of the Innotel platform stack.</span>
+      <div class="foot-links">
+        <a href="https://github.com/innotelinc/verifier">Source</a>
+        <a href="https://github.com/innotelinc/verifier/tree/main/docs">Documentation</a>
+        <a href="https://github.com/innotelinc/innotel-platform-stack">Platform stack</a>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>

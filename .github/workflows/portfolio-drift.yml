@@ -56,6 +56,8 @@ jobs:
             .githooks/guard-lib
             .githooks/commit-msg
             .githooks/pre-commit
+            .githooks/secret-scan.sh
+            scripts/secret-scan.py
             .github/workflows/attribution-guard.yml
           )
 

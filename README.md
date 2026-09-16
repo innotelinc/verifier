@@ -15,6 +15,12 @@ other platform can adopt verbatim:
 - **Conformity scaffolding** — the repository structure, guard workflows, and
   landing-page layout used across the portfolio, kept runnable and
   self-checking (the CI fails if a required file goes missing).
+- **Secret scanning at the hook** — the same vendored-file model for
+  credential detection: every repo carries `scripts/secret-scan.py` and a
+  `.githooks/secret-scan.sh` shim, wired into `pre-commit` ahead of the
+  attribution check, so credential-shaped content is blocked before a commit
+  is created. `portfolio-drift.yml` keeps those copies identical estate-wide
+  too.
 - **Proof it still fires** — `guard_selftest` (run by `make check-guard`,
   `scripts/setup.sh`, and every platform's CI) forces the guard's failure
   paths; the portfolio drift workflow fails CI if any sibling repo's vendored
@@ -61,10 +67,10 @@ The full policy text lives in
 
 | Path | Purpose |
 | --- | --- |
-| `.githooks/` | `guard-lib`, `commit-msg`, `pre-commit` — the guard itself |
-| `.github/workflows/` | CI, attribution guard, GitHub Pages |
+| `.githooks/` | `guard-lib`, `commit-msg`, `pre-commit`, `secret-scan.sh` — the guard + secret gate |
+| `.github/workflows/` | CI, attribution guard, portfolio drift, GitHub Pages |
 | `docs/` | Policy and documentation |
-| `scripts/setup.sh` | Hook installation + guard self-test |
+| `scripts/` | Hook installation, guard self-test, `secret-scan.py` scanner, `stack-lib.sh`, `mesh.sh` |
 | `web/landing/` | The static landing page (published to Pages) |
 
 See [docs/stack.md](docs/stack.md) for Verifier's role in the Innotel Platform Stack.

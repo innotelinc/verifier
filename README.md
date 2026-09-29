@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/innotelinc/verifier/actions/workflows/ci.yml/badge.svg)](https://github.com/innotelinc/verifier/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Theme: Unity](https://img.shields.io/badge/theme-Unity-6366f1)](https://github.com/innotelinc/innotel-platform-stack/blob/main/standards/unity/README.md)
+**[Landing page →](https://innotelinc.github.io/verifier/)**
 
 Verifier is the trust and verification tooling for the [Innotel platform
 stack](https://github.com/innotelinc/innotel-platform-stack). It packages the

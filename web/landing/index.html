@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-scheme="operations">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,22 +9,25 @@
   <meta property="og:description" content="One attribution policy enforced at the hook and in CI, estate-wide secret scanning, and a drift check that fails when any vendored copy rots.">
   <meta property="og:type" content="website">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%233ddc84'/%3E%3Cpath fill='%230b0d10' d='M28 42L16 30l4-4 8 8 16-16 4 4z'/%3E%3C/svg%3E">
-  <style>
-    :root {
-      color-scheme: dark;
-      --p-bg: #0b0d10;
-      --p-bg-elevated: #14181e;
-      --p-border: #262c35;
-      --p-text: #f4f7fb;
-      --p-text-secondary: #a8b2bf;
-      --p-text-muted: #727d8c;
-      --p-accent: #3ddc84;
-      --p-accent-hover: #6fe8a7;
-      --p-accent-tint: rgba(61, 220, 132, 0.12);
-      --p-success: #3ddc84;
-      --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+  <link rel="stylesheet" href="unity-theme.css">
+  <script>window.UNITY_DEFAULT_SCHEME = "operations";</script>
+  <script src="unity-theme.js"></script>
+  <style>:root {
+      --p-bg: var(--canvas);
+      --p-bg-elevated: var(--surface-muted);
+      --p-border: var(--line);
+      --p-text: var(--ink);
+      --p-text-secondary: var(--ink-soft);
+      --p-text-muted: var(--ink-faint);
+      --p-accent: var(--brand);
+      --p-accent-hover: var(--brand-ring);
+      --p-accent-tint: var(--brand-soft);
+      --p-success: var(--ok);
+      --radius-md: var(--radius);
       --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
     }
+
+    
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
@@ -41,7 +44,7 @@
     .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
     .topbar {
       position: sticky; top: 0; z-index: 10;
-      background: rgba(11, 13, 16, 0.72);
+      background: color-mix(in srgb, var(--canvas) 72%, transparent);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       border-bottom: 1px solid var(--p-border);
@@ -81,8 +84,8 @@
       content: "";
       position: absolute; inset: 0;
       background:
-        radial-gradient(600px 320px at 70% -10%, rgba(61, 220, 132, 0.12), transparent 70%),
-        radial-gradient(500px 300px at 15% 110%, rgba(61, 220, 132, 0.07), transparent 70%);
+        radial-gradient(600px 320px at 70% -10%, color-mix(in srgb, var(--ok) 12%, transparent), transparent 70%),
+        radial-gradient(500px 300px at 15% 110%, color-mix(in srgb, var(--ok) 7%, transparent), transparent 70%);
       pointer-events: none;
     }
     .hero-inner { position: relative; max-width: 760px; }
@@ -91,7 +94,7 @@
       font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
       color: var(--p-accent-hover);
       background: var(--p-accent-tint);
-      border: 1px solid rgba(61, 220, 132, 0.25);
+      border: 1px solid color-mix(in srgb, var(--ok) 25%, transparent);
       border-radius: 999px;
       padding: 5px 14px;
       margin: 0 0 24px;
@@ -108,8 +111,8 @@
       border: 1px solid transparent;
       transition: background .15s var(--ease), border-color .15s var(--ease);
     }
-    .btn-primary { background: var(--p-accent); color: #07140c; font-weight: 600; }
-    .btn-primary:hover { background: var(--p-accent-hover); color: #07140c; }
+    .btn-primary { background: var(--p-accent); color: var(--brand-ink); font-weight: 600; }
+    .btn-primary:hover { background: var(--p-accent-hover); color: var(--brand-ink); }
     .btn-secondary { border-color: var(--p-border); color: var(--p-text); }
     .btn-secondary:hover { border-color: var(--p-accent); background: var(--p-accent-tint); color: var(--p-text); }
     .quickstart {
@@ -188,7 +191,7 @@
       margin-left: auto;
       font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
       color: var(--p-success);
-      border: 1px solid rgba(61, 220, 132, 0.3);
+      border: 1px solid color-mix(in srgb, var(--ok) 30%, transparent);
       border-radius: 999px;
       padding: 1px 8px;
     }
@@ -224,6 +227,7 @@
           GitHub
         </a>
       </nav>
+        <div class="ot-theme" role="group" aria-label="Colour theme" data-unity-switch><button type="button" data-theme-mode="system" aria-pressed="false">System</button><button type="button" data-theme-mode="light" aria-pressed="false">Light</button><button type="button" data-theme-mode="dark" aria-pressed="false">Dark</button></div>
     </div>
   </header>
 
@@ -309,5 +313,13 @@ $ <span class="p">git commit</span> -m "docs: add walkthrough"
       </div>
     </div>
   </footer>
+  <script>(function(){
+  var api=window.UnityTheme||window.OntrakTheme;if(!api)return;
+  function paint(){var now=api.mode();var all=document.querySelectorAll('[data-theme-mode]');
+    for(var i=0;i<all.length;i++){all[i].setAttribute('aria-pressed',String(all[i].getAttribute('data-theme-mode')===now));}}
+  var buttons=document.querySelectorAll('[data-theme-mode]');
+  for(var i=0;i<buttons.length;i++){buttons[i].addEventListener('click',function(){api.setMode(this.getAttribute('data-theme-mode'));});}
+  window.addEventListener('unity:theme',paint);window.addEventListener('ontrak:theme',paint);paint();
+})();</script>
 </body>
 </html>

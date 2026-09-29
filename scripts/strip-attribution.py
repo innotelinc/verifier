@@ -23,11 +23,16 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import os
 import re
 import shutil
 import subprocess
 import sys
 from pathlib import Path
+
+
+def _os_environ() -> dict[str, str]:
+    return dict(os.environ)
 
 # A line is dropped when it credits a tool. These are the two shapes the estate
 # actually contains, plus the generic trailers the policy names.
@@ -93,7 +98,10 @@ def offending(repo: Path) -> list[tuple[str, str]]:
 def backup(repo: Path) -> Path:
     stamp = dt.datetime.now().strftime("%Y%m%d-%H%M%S")
     target = repo / ".git" / f"pre-strip-{stamp}.bundle"
-    run(["git", "bundle", "create", str(target), "--all"], repo)
+    # Explicit ref namespaces rather than `--all`: a previous run — or a previous
+    # operator — may have left `refs/original/*` behind, and bundling those stores the
+    # pre-rewrite commits a second time on top of the ones we came to save.
+    run(["git", "bundle", "create", str(target), "--branches", "--tags", "--remotes"], repo)
     return target
 
 
@@ -101,15 +109,20 @@ def apply_rewrite(repo: Path, self_path: Path) -> None:
     # `--msg-filter` runs the process once per commit with the message on stdin.
     # `--tag-name-filter cat` keeps tags pointing at their rewritten commits;
     # without it every tag would be left dangling on the old history.
+    #
+    # The revision list is `--branches --tags`, deliberately not `--all`: `--all`
+    # includes `refs/remotes/origin/*`, and rewriting a remote-tracking ref makes the
+    # local checkout believe it already matches the remote when it does not — which
+    # would turn "this needs a force-push" into a silent no-op.
     env = {"FILTER_BRANCH_SQUELCH_WARNING": "1"}
     subprocess.run(
         [
             "git", "filter-branch", "-f",
             "--msg-filter", f"python3 {self_path} --clean",
             "--tag-name-filter", "cat",
-            "--", "--all",
+            "--", "--branches", "--tags",
         ],
-        cwd=repo, env={**__import__("os").environ, **env}, check=False,
+        cwd=repo, env={**_os_environ(), **env}, check=False,
     )
 
 

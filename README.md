@@ -5,10 +5,20 @@
 [![Theme: Unity](https://img.shields.io/badge/theme-Unity-6366f1)](https://github.com/innotelinc/innotel-platform-stack/blob/main/standards/unity/README.md)
 **[Landing page →](https://innotelinc.github.io/verifier/)**
 
-Verifier is the trust and verification tooling for the [Innotel platform
-stack](https://github.com/innotelinc/innotel-platform-stack). It packages the
-portfolio's cross-cutting guarantees as small, self-contained pieces every
-other platform can adopt verbatim:
+> **Verifier** is the trust and verification tooling of the [Innotel Platform
+> Stack](https://github.com/innotelinc/innotel-platform-stack): one attribution
+> policy enforced at the hook and in CI, an estate-wide secret gate, and the
+> conformity scaffolding every other repo adopts verbatim. It ships no runtime —
+> each guarantee is a file vendored into the platforms, with a drift workflow
+> that fails when a copy rots.
+>
+> It states the portfolio's secrets posture (Cerulean Vault) and owns no
+> identity, DNS, TLS, storage or billing. Landing page:
+> [innotelinc.github.io/verifier](https://innotelinc.github.io/verifier/).
+
+## What it is
+
+Small, self-contained pieces every other platform adopts verbatim:
 
 - **Attribution guard** — one policy, enforced at three points: the local
   `commit-msg` and `pre-commit` hooks and a CI workflow that scans commit
@@ -25,8 +35,9 @@ other platform can adopt verbatim:
   too.
 - **Proof it still fires** — `guard_selftest` (run by `make check-guard`,
   `scripts/setup.sh`, and every platform's CI) forces the guard's failure
-  paths; the portfolio drift workflow fails CI if any sibling repo's vendored
-  copy of the guard files differs from the canonical ones here.
+  paths; the portfolio drift workflow clones the 25 repositories in the
+  portfolio inventory and fails CI if any sibling's vendored copy of the guard
+  files differs from the canonical ones here.
 
 ## Why Verifier
 

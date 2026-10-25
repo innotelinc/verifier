@@ -48,8 +48,8 @@ jobs:
           PORTFOLIO: >-
             atheniq atlas capstone cerulean distro innotel-platform-stack
             magnate monarch npm oasis olympus onyx plutus rizzaura signara
-            sign zapit zeus clearpath warden repotracker orion
-            scorm-cdp-driver genie-soulforge Bootxi ontrak-mcp
+            sign zapit zeus clearpath warden orion scorm-cdp-driver
+            genie-soulforge Bootxi ontrak-mcp
         run: |
           set -euo pipefail
           org="innotelinc"

@@ -45,10 +45,14 @@ jobs:
       - name: Compare every sibling repo against the canonical copies
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Archived repositories accept no updates at all, so a guard they
+          # cannot receive would keep this check red forever. olympus and sign
+          # are archived and deliberately absent; un-archive one and it goes
+          # back in this list in the same change.
           PORTFOLIO: >-
             atheniq atlas capstone cerulean distro innotel-platform-stack
-            magnate monarch npm oasis olympus onyx plutus rizzaura signara
-            sign zapit zeus clearpath warden orion scorm-cdp-driver
+            magnate monarch npm oasis onyx plutus rizzaura signara
+            zapit zeus clearpath warden orion scorm-cdp-driver
             genie-soulforge Bootxi ontrak-mcp
         run: |
           set -euo pipefail

@@ -21,6 +21,9 @@ on:
       - ".githooks/**"
       - ".github/workflows/attribution-guard.yml"
       - ".github/workflows/portfolio-drift.yml"
+  # A sibling repo can be re-synced without touching anything here, so the
+  # drift walk has to be runnable on demand as well.
+  workflow_dispatch:
   pull_request:
     paths:
       - ".githooks/**"
